@@ -1,0 +1,79 @@
+
+
+package sanakirja;
+
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Scanner;
+
+
+public class MuistavaSanakirja {
+    
+    private HashMap<String, String> sanakirjaSuomi;
+    private HashMap<String, String> sanakirjaKaannos;
+    private String tiedosto;
+    
+    public MuistavaSanakirja() {
+        this.sanakirjaSuomi = new HashMap<>();
+        this.sanakirjaKaannos = new HashMap<>();
+    }
+    
+    public MuistavaSanakirja(String tiedosto) {
+        this.sanakirjaSuomi = new HashMap<>();
+        this.sanakirjaKaannos = new HashMap<>();
+        this.tiedosto = tiedosto;
+    }
+    
+    public boolean lataa() {
+        try (Scanner lukija = new Scanner(Paths.get(this.tiedosto))) {
+        while (lukija.hasNextLine()) {
+            String rivi = lukija.nextLine();
+            String[] osat = rivi.split(":");
+            String sana1 = (osat[0]);            
+            String sana2 = (osat[1]);
+            this.sanakirjaSuomi.put(sana1, sana2);
+            this.sanakirjaKaannos.put(sana2, sana1);
+        }
+            return true;
+        }
+        catch (Exception e) {
+            return false;
+        }
+    }
+    
+    public void lisaa(String sana, String kaannos) {
+        if (this.sanakirjaSuomi.containsKey(sana) || this.sanakirjaKaannos.containsKey(sana)) {
+            
+        }
+        else {
+            this.sanakirjaSuomi.put(sana, kaannos);
+            this.sanakirjaKaannos.put(kaannos, sana);
+        }
+    }
+    
+    public String kaanna(String sana) {
+        String palautettava = null;
+        if (this.sanakirjaSuomi.containsKey(sana)) {
+            palautettava = this.sanakirjaSuomi.get(sana);
+        }
+        if (this.sanakirjaKaannos.containsKey(sana)) {
+            palautettava = this.sanakirjaKaannos.get(sana);
+        }
+        return palautettava;
+    }
+    
+    public void poista(String sana) {
+         for (String key : this.sanakirjaSuomi.keySet()) {
+             if (key.equals(sana)) {             
+             this.sanakirjaKaannos.remove(this.sanakirjaSuomi.get(sana));
+             this.sanakirjaSuomi.remove(sana);
+             }
+         }
+         for (String key : this.sanakirjaKaannos.keySet()) {
+             if (key.equals(sana)) {
+             this.sanakirjaSuomi.remove(this.sanakirjaKaannos.get(sana));    
+             this.sanakirjaKaannos.remove(sana);
+             }
+         }
+    }
+}
